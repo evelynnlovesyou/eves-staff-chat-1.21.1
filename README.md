@@ -1,6 +1,6 @@
 **Commands**
 > /staffchat (Message)
-- Allows staff to chat privately without sneaky players viewing the messages. Complete with evesstaffchat.staffchat.send and evesstaffchat.staffchat.receive permission nodes (Defaults to OP if luckperms is not found)
+- Allows staff to chat privately without sneaky players viewing the messages. Complete with evesstaffchat.staffchat.send and evesstaffchat.staffchat.receive permission nodes (Defaults to OP if luckperms is not found for each perm node)
 
 > /staffchattoggle or /staffchat
 - Allows staff to toggle staff-chat mode, sending only staff messages when typing in chat (Needs to be toggled off again to send regular messages) (oh also another permission node evesstaffchat.staffchat.toggle)
