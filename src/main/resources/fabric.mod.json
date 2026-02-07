@@ -23,11 +23,7 @@
 		]
 	},
 	"mixins": [
-		"eves-staff-chat.mixins.json",
-		{
-			"config": "eves-staff-chat.client.mixins.json",
-			"environment": "client"
-		}
+		"eves-staff-chat.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

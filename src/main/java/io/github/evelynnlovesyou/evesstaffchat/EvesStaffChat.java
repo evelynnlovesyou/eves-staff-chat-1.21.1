@@ -1,16 +1,20 @@
 package io.github.evelynnlovesyou.evesstaffchat;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.evelynnlovesyou.evesstaffchat.commands.StaffChatCommand;
+import io.github.evelynnlovesyou.evesstaffchat.events.PlayerConnectionHandler;
+import io.github.evelynnlovesyou.evesstaffchat.events.StaffChatMessageHandler;
+import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
+
 public class EvesStaffChat implements ModInitializer {
 	public static final String MOD_ID = "eves-staff-chat";
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override
@@ -19,6 +23,18 @@ public class EvesStaffChat implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("Initialising " + MOD_ID + " v1.0.0");
+
+		// Register commands
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			StaffChatCommand.register(dispatcher);
+		});
+
+		// Register event handlers
+		PlayerConnectionHandler.register();
+		StaffChatMessageHandler.register();
+
+		// Initialize LuckPerms after server has started
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> StaffChatManager.init());
 	}
 }

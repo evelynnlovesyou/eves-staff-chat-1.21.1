@@ -1,0 +1,10 @@
+{
+  "no_permission_toggle": "You do not have permission to toggle staff chat!",
+  "no_permission_send": "You do not have permission to send staff chat messages!",
+  "no_permission_reload": "You do not have permission to reload staff chat!",
+  "staffchat_enabled": "Staff chat enabled",
+  "staffchat_disabled": "Staff chat disabled",
+  "staff_message_format": "[Staff] %player%: %message%",
+  "reload_success": "Staff chat configuration reloaded",
+  "reload_failed": "Failed to reload staff chat configuration. Check logs."
+}
