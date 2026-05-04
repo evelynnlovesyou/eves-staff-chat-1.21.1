@@ -3,6 +3,7 @@ package io.github.evelynnlovesyou.evesstaffchat;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import io.github.evelynnlovesyou.evesstaffchat.commands.StaffChatCommand;
 import io.github.evelynnlovesyou.evesstaffchat.events.PlayerConnectionHandler;
 import io.github.evelynnlovesyou.evesstaffchat.events.StaffChatMessageHandler;
-import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
+import io.github.evelynnlovesyou.evesstaffchat.manager.PermissionManager;
 
 public class EvesStaffChat implements ModInitializer {
 	public static final String MOD_ID = "eves-staff-chat";
@@ -19,11 +20,12 @@ public class EvesStaffChat implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
 
-		LOGGER.info("Initialising " + MOD_ID + " v1.0.0");
+		String version = FabricLoader.getInstance()
+			.getModContainer(MOD_ID)
+			.map(container -> container.getMetadata().getVersion().getFriendlyString())
+			.orElse("unknown");
+		LOGGER.info("eves-staff-chat Initialising {} v{}", MOD_ID, version);
 
 		// Register commands
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -35,6 +37,6 @@ public class EvesStaffChat implements ModInitializer {
 		StaffChatMessageHandler.register();
 
 		// Initialize LuckPerms after server has started
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> StaffChatManager.init());
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> PermissionManager.init());
 	}
 }

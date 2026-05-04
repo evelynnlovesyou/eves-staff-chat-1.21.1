@@ -28,17 +28,6 @@ public class ModConfig {
     private static final Map<String, String> MESSAGES = new HashMap<>();
     private static final Map<String, Object> SETTINGS = new HashMap<>();
 
-    // Permission nodes (hardcoded)
-    private static final String PERM_NODE_TOGGLE = "evesstaffchat.staffchat.toggle";
-    private static final String PERM_NODE_SEND = "evesstaffchat.staffchat.send";
-    private static final String PERM_NODE_RECEIVE = "evesstaffchat.staffchat.receive";
-    private static final String PERM_NODE_RELOAD = "evesstaffchat.staffchat.reload";
-
-    // Commands and arguments (hardcoded)
-    private static final String CMD_STAFFCHAT = "staffchat";
-    private static final String CMD_STAFFCHAT_TOGGLE = "staffchattoggle";
-    private static final String ARG_MSG = "message";
-
     // Default values
     private static final Map<String, Object> DEFAULT_SETTINGS = Map.ofEntries(
         Map.entry("use_action_bar", true)
@@ -152,14 +141,6 @@ public class ModConfig {
                 }
             }
 
-            // Populate public fields
-            COMMAND = CMD_STAFFCHAT;
-            COMMAND_TOGGLE = CMD_STAFFCHAT_TOGGLE;
-            ARG_MESSAGE = ARG_MSG;
-            PERM_TOGGLE = PERM_NODE_TOGGLE;
-            PERM_SEND = PERM_NODE_SEND;
-            PERM_RECEIVE = PERM_NODE_RECEIVE;
-            PERM_RELOAD = PERM_NODE_RELOAD;
             USE_ACTION_BAR = Boolean.parseBoolean(String.valueOf(SETTINGS.get("use_action_bar")));
 
             NO_PERMISSION_TOGGLE = MESSAGES.get("no_permission_toggle");
@@ -171,7 +152,7 @@ public class ModConfig {
             RELOAD_SUCCESS = MESSAGES.get("reload_success");
             RELOAD_FAILED = MESSAGES.get("reload_failed");
 
-            LOGGER.info("Mod configuration fully initialized");
+            LOGGER.info("Mod configuration fully initialised");
 
         } catch (IOException e) {
             throw new ConfigLoadException("Failed to load configuration files: " + e.getMessage(), e);

@@ -8,6 +8,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 
+import io.github.evelynnlovesyou.evesstaffchat.manager.PermissionManager;
 import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
 import io.github.evelynnlovesyou.evesstaffchat.config.ModConfig;
 import io.github.evelynnlovesyou.evesstaffchat.exceptions.ConfigLoadException;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
 public class StaffChatCommand {
-
+    private static final String basePerm = "evesstaffchat";
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
 
     // Utility class - prevent instantiation
@@ -28,11 +29,12 @@ public class StaffChatCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-            Commands.literal(ModConfig.COMMAND)
+            Commands.literal("staffchat")
+                .requires(source -> hasPermission(source, basePerm + ".use"))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-                    if (!canUseToggle(player)) {
+                    if (!PermissionManager.hasPermission(player, basePerm + ".toggle")) {
                         sendMessage(player, Component.literal(ModConfig.NO_PERMISSION_TOGGLE));
                         return 0;
                     }
@@ -43,13 +45,9 @@ public class StaffChatCommand {
                 })
                 .then(
                     Commands.argument(ModConfig.ARG_MESSAGE, StringArgumentType.greedyString())
+                        .requires(source -> hasPermission(source, basePerm + ".send"))
                         .executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
-
-                            if (!canUseSend(player)) {
-                                sendMessage(player, Component.literal(ModConfig.NO_PERMISSION_SEND));
-                                return 0;
-                            }
 
                             String message = getString(ctx, ModConfig.ARG_MESSAGE);
                             StaffChatManager.sendStaffMessage(player, message);
@@ -61,13 +59,9 @@ public class StaffChatCommand {
         // Register toggle-only command
         dispatcher.register(
             Commands.literal(ModConfig.COMMAND_TOGGLE)
+                .requires(source -> hasPermission(source, basePerm + ".toggle"))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
-
-                    if (!canUseToggle(player)) {
-                        sendMessage(player, Component.literal(ModConfig.NO_PERMISSION_TOGGLE));
-                        return 0;
-                    }
 
                     boolean enabled = StaffChatManager.toggle(player);
                     sendMessage(player, Component.literal(enabled ? ModConfig.STAFFCHAT_ENABLED : ModConfig.STAFFCHAT_DISABLED));
@@ -78,16 +72,11 @@ public class StaffChatCommand {
         // Register admin command: /evesstaffchat reload
         dispatcher.register(
             Commands.literal("evesstaffchat")
+            .requires(source -> hasPermission(source, basePerm + ".reload"))
                 .then(
                     Commands.literal("reload")
                         .executes(ctx -> {
                             CommandSourceStack source = ctx.getSource();
-
-                            if (!canUseReload(source)) {
-                                sendToSource(source, Component.literal(ModConfig.NO_PERMISSION_RELOAD), true);
-                                return 0;
-                            }
-
                             try {
                                 ModConfig.reload();
                                 sendToSource(source, Component.literal(ModConfig.RELOAD_SUCCESS), false);
@@ -123,20 +112,8 @@ public class StaffChatCommand {
         }
     }
 
-    // Check if player can toggle staff chat
-    private static boolean canUseToggle(ServerPlayer player) {
-        return StaffChatManager.hasPermission(player, ModConfig.PERM_TOGGLE);
-    }
-
-    // Check if player can send one-off staff messages
-    private static boolean canUseSend(ServerPlayer player) {
-        return StaffChatManager.hasPermission(player, ModConfig.PERM_SEND);
-    }
-
-    private static boolean canUseReload(CommandSourceStack source) {
-        if (source.getEntity() instanceof ServerPlayer player) {
-            return StaffChatManager.hasPermission(player, ModConfig.PERM_RELOAD);
-        }
-        return true;
+    private static boolean hasPermission(CommandSourceStack source, String permission) {
+        return source.getEntity() instanceof ServerPlayer player
+            && PermissionManager.hasPermission(player, permission);
     }
 }
