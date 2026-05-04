@@ -55,8 +55,6 @@ public class ModConfig {
     public static String RELOAD_FAILED;
 
     // Settings
-    public static String COMMAND;
-    public static String COMMAND_TOGGLE;
     public static String ARG_MESSAGE;
     public static String PERM_TOGGLE;
     public static String PERM_SEND;

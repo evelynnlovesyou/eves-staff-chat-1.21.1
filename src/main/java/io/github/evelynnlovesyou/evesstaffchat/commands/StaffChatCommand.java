@@ -22,11 +22,6 @@ public class StaffChatCommand {
     private static final String basePerm = "evesstaffchat";
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
 
-    // Utility class - prevent instantiation
-    private StaffChatCommand() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
             Commands.literal("staffchat")
@@ -56,9 +51,9 @@ public class StaffChatCommand {
                 )
         );
 
-        // Register toggle-only command
+        // Register toggle command: /staffchattoggle
         dispatcher.register(
-            Commands.literal(ModConfig.COMMAND_TOGGLE)
+            Commands.literal("staffchattoggle")
                 .requires(source -> hasPermission(source, basePerm + ".toggle"))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
