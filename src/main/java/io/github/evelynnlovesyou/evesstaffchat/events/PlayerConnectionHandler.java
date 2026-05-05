@@ -5,11 +5,6 @@ import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
 
 public class PlayerConnectionHandler {
 
-    // Utility class - prevent instantiation
-    private PlayerConnectionHandler() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static void register() {
         // Clean up toggled state when player disconnects (prevents memory leak)
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {

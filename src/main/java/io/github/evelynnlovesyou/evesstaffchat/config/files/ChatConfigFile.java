@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import io.github.evelynnlovesyou.evesstaffchat.config.ChatDefinition;
 import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
 import io.github.evelynnlovesyou.evesstaffchat.exceptions.ConfigLoadException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

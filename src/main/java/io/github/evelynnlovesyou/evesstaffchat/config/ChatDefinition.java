@@ -1,5 +1,6 @@
 package io.github.evelynnlovesyou.evesstaffchat.config;
 
+// Chat definition used to store specific config data for each chat created
 public final class ChatDefinition {
 
     private final String key;
