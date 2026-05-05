@@ -2,6 +2,7 @@ package io.github.evelynnlovesyou.evesstaffchat.manager;
 
 import io.github.evelynnlovesyou.evesstaffchat.config.ChatDefinition;
 import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 

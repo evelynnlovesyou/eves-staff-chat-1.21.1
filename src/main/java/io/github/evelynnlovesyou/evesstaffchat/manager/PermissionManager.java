@@ -3,6 +3,7 @@ package io.github.evelynnlovesyou.evesstaffchat.manager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
+
 import net.minecraft.server.level.ServerPlayer;
 
 import org.slf4j.Logger;
