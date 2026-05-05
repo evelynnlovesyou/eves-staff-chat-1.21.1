@@ -22,6 +22,12 @@ public class PermissionManager {
         initLuckPerms();
     }
 
+    public static synchronized void reset() {
+        luckPermsApi = null;
+        luckPermsMissing = false;
+        luckPermsWarned = false;
+    }
+
     // init luckperms or just use op only
     private static synchronized void initLuckPerms() {
         if (luckPermsApi != null || luckPermsMissing) {

@@ -1,16 +1,16 @@
 **Commands**
-> /staffchat <Message>
-- Allows staff to chat privately without sneaky players viewing the messages. Complete with evesstaffchat.staffchat.send and evesstaffchat.staffchat.receive permission nodes (Defaults to OP if luckperms is not found)
+> /staffchat \<message\>
+- Allows staff to chat privately without sneaky players viewing the messages. Permission nodes: `evesstaffchat.<Chat_Name>.send`, `evesstaffchat.<Chat_Name>.send` and `evesstaffchat.<Chat_Name>.receive` (defaults to OP if LuckPerms is not found)
 
-> /staffchattoggle or /staffchat
-- Allows staff to toggle staff-chat mode, sending only staff messages when typing in chat (Needs to be toggled off again to send regular messages) (oh also another permission node evesstaffchat.staffchat.toggle)
+> /staffchattoggle or /staffchat (no args)
+- Toggles staff-chat mode — while enabled, everything you type goes to staff chat. Needs to be toggled off again to send regular messages. Permission node: `evesstaffchat.staffchat.toggle`
 
 > /evesstaffchat reload
-- Allows the config(s) to be reloaded if needed permission node = evesstaffchat.staffchat.reload
+- Reloads all configs. Permission node: `evesstaffchat.reload`
 
 **Configuration**
-> Lang for each message sent to staff (or players) that try to run the command with/without perms
-- Customise the shit your shit says!
+> Multiple chats can be defined in `chats.json`, each with their own command, permission base, and message format. A default `staffchat` entry is created automatically.
 
-> Oh yeah there's like an option for the message to be sent on the action bar for some things, chagippity did it and i was just like yeah whatever bro 🥀
-- cooL!
+> `lang.json` lets you customise every message the mod sends to players.
+
+> `config.json` has an `use_action_bar` option to send toggle/feedback messages on the action bar instead of chat.

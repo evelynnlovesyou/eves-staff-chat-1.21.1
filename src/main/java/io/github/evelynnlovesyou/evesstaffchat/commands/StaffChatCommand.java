@@ -31,6 +31,20 @@ public class StaffChatCommand {
     private static final String RELOAD_PERM = "evesstaffchat.reload";
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
 
+    // cached reflected fields for command node removal
+    private static final Field CHILDREN_FIELD;
+    private static final Field LITERALS_FIELD;
+    static {
+        try {
+            CHILDREN_FIELD = CommandNode.class.getDeclaredField("children");
+            CHILDREN_FIELD.setAccessible(true);
+            LITERALS_FIELD = CommandNode.class.getDeclaredField("literals");
+            LITERALS_FIELD.setAccessible(true);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     // tracks all currently registered commands, removed when reloading to prevent registration of deleted chats and to update permissions
     private static final Set<String> REGISTERED_CHAT_COMMANDS = new HashSet<>();
 
@@ -77,18 +91,14 @@ public class StaffChatCommand {
     // remove commands from dispatcher that are still loaded but aren't in config
     private static void removeCommandNode(CommandDispatcher<CommandSourceStack> dispatcher, String name) {
         try {
-            Field childrenField = CommandNode.class.getDeclaredField("children");
-            childrenField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Map<String, CommandNode<CommandSourceStack>> children =
-                (Map<String, CommandNode<CommandSourceStack>>) childrenField.get(dispatcher.getRoot());
+                (Map<String, CommandNode<CommandSourceStack>>) CHILDREN_FIELD.get(dispatcher.getRoot());
             children.remove(name);
 
-            Field literalsField = CommandNode.class.getDeclaredField("literals");
-            literalsField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Map<String, LiteralCommandNode<CommandSourceStack>> literals =
-                (Map<String, LiteralCommandNode<CommandSourceStack>>) literalsField.get(dispatcher.getRoot());
+                (Map<String, LiteralCommandNode<CommandSourceStack>>) LITERALS_FIELD.get(dispatcher.getRoot());
             literals.remove(name);
         } catch (ReflectiveOperationException e) {
             LOGGER.warn("Failed to unregister command /{}: {}", name, e.getMessage());
@@ -166,8 +176,9 @@ public class StaffChatCommand {
         }
     }
 
-    // check perms
+    // check perms - console always has permission
     private static boolean hasPermission(CommandSourceStack source, String permission) {
+        if (source.getEntity() == null) return true;
         return source.getEntity() instanceof ServerPlayer player
             && PermissionManager.hasPermission(player, permission);
     }

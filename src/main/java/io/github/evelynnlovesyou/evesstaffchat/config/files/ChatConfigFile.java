@@ -66,12 +66,13 @@ public class ChatConfigFile {
                 if (permissionBase.isEmpty()) {
                     permissionBase = "evesstaffchat." + key;
                 }
-                String chatcommand = values.getOrDefault("chat_command", key).trim();
-                String messageFormat = values.getOrDefault("message_format", DEFAULT_MESSAGE_FORMAT);
-                String chatname = values.getOrDefault("chat_name", key).trim();
-                if (chatcommand.isEmpty()) {
+                String chatcommand = sanitizeKey(values.getOrDefault("chat_command", key).trim());
+                if (chatcommand == null) {
+                    LOGGER.warn("Invalid chat_command for key '{}', falling back to key name", key);
                     chatcommand = key;
                 }
+                String messageFormat = values.getOrDefault("message_format", DEFAULT_MESSAGE_FORMAT);
+                String chatname = values.getOrDefault("chat_name", key).trim();
                 if (chatname.isEmpty()) {
                     chatname = key;
                 }
@@ -97,39 +98,17 @@ public class ChatConfigFile {
     }
 
     private static boolean ensureStaffChatDefault(Map<String, Map<String, String>> chats) {
+        Map<String, String> staffChatDefaults = DEFAULT_CHATS.get("staffchat");
         if (!chats.containsKey("staffchat")) {
-            Map<String, String> defaults = new LinkedHashMap<>();
-            defaults.put("chat_name", "Staff Chat");
-            defaults.put("chat_command", "staffchat");
-            defaults.put("permission_base", "evesstaffchat.staffchat");
-            defaults.put("message_format", DEFAULT_MESSAGE_FORMAT);
-            chats.put("staffchat", defaults);
+            chats.put("staffchat", new LinkedHashMap<>(staffChatDefaults));
             return true;
         }
-        boolean updated = false;
         Map<String, String> staffChat = chats.get("staffchat");
         if (staffChat == null) {
-            staffChat = new LinkedHashMap<>();
-            chats.put("staffchat", staffChat);
-            updated = true;
+            chats.put("staffchat", new LinkedHashMap<>(staffChatDefaults));
+            return true;
         }
-        if (!staffChat.containsKey("permission_base")) {
-            staffChat.put("permission_base", "evesstaffchat.staffchat");
-            updated = true;
-        }
-        if (!staffChat.containsKey("message_format")) {
-            staffChat.put("message_format", DEFAULT_MESSAGE_FORMAT);
-            updated = true;
-        }
-        if (!staffChat.containsKey("chat_command")) {
-            staffChat.put("chat_command", "staffchat");
-            updated = true;
-        }
-        if (!staffChat.containsKey("chat_name")) {
-            staffChat.put("chat_name", "Staff Chat");
-            updated = true;
-        }
-        return updated;
+        return ConfigRepository.mergeDefaults(staffChat, staffChatDefaults);
     }
 
     private static Map<String, Map<String, String>> createDefaultChats() {

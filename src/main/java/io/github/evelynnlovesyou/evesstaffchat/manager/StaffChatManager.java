@@ -18,6 +18,10 @@ public class StaffChatManager {
         ACTIVE_CHAT.remove(playerId);
     }
 
+    public static void clearAll() {
+        ACTIVE_CHAT.clear();
+    }
+
     public static boolean toggle(ServerPlayer player, String chatKey) {
         if (ConfigRepository.get().chats().getChat(chatKey) == null) {
             return false;

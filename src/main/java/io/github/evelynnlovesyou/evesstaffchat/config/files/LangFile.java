@@ -23,14 +23,15 @@ public class LangFile {
     static final String FILE_NAME = "lang.json";
     private static final String DEFAULT_RESOURCE = "/config/lang.json";
 
-    private static final Map<String, String> DEFAULTS = Map.of(
-        "no_permission_toggle", "no perms to toggle %chat_name%",
-        "no_permission_send",   "no perms to send to %chat_name%",
-        "no_permission_reload", "no perms to reload config",
-        "chat_enabled",         "%chat_name% enabled",
-        "chat_disabled",        "%chat_name% disabled",
-        "reload_success",       "reloaded",
-        "reload_failed",        "failed to reload config"
+    private static final Map<String, String> DEFAULTS = Map.ofEntries(
+        Map.entry("no_permission_toggle", "no perms to toggle %chat_name%"),
+        Map.entry("no_permission_send",   "no perms to send to %chat_name%"),
+        Map.entry("no_permission_reload", "no perms to reload config"),
+        Map.entry("chat_enabled",         "%chat_name% enabled"),
+        Map.entry("chat_disabled",        "%chat_name% disabled"),
+        Map.entry("reload_success",       "reloaded"),
+        Map.entry("reload_failed",        "failed to reload config"),
+        Map.entry("empty_message",        "cannot send an empty message to %chat_name%")
     );
 
     private final Path configFolder;
@@ -63,7 +64,7 @@ public class LangFile {
     }
 
     public String get(String key) {
-        return messages.getOrDefault(key, "");
+        return messages.getOrDefault(key, key);
     }
 
     private void save() throws IOException {

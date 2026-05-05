@@ -13,6 +13,7 @@ import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
 import io.github.evelynnlovesyou.evesstaffchat.events.PlayerConnectionHandler;
 import io.github.evelynnlovesyou.evesstaffchat.events.StaffChatMessageHandler;
 import io.github.evelynnlovesyou.evesstaffchat.manager.PermissionManager;
+import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
 
 public class EvesStaffChat implements ModInitializer {
 	public static final String MOD_ID = "eves-staff-chat";
@@ -46,5 +47,11 @@ public class EvesStaffChat implements ModInitializer {
 
 		// Initialize LuckPerms after server has started
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> PermissionManager.init());
+
+		// Clear static state on server stop to prevent leaks in dev/integrated server environments
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			StaffChatManager.clearAll();
+			PermissionManager.reset();
+		});
 	}
 }
