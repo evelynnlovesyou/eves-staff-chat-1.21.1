@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
 public class StaffChatCommand {
-    private static final String basePerm = "evesstaffchat";
+    private static final String basePerm = "evesstaffchat.staffchat";
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -39,12 +39,12 @@ public class StaffChatCommand {
                     return 1;
                 })
                 .then(
-                    Commands.argument(ModConfig.ARG_MESSAGE, StringArgumentType.greedyString())
+                    Commands.argument("message", StringArgumentType.greedyString())
                         .requires(source -> hasPermission(source, basePerm + ".send"))
                         .executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-                            String message = getString(ctx, ModConfig.ARG_MESSAGE);
+                            String message = getString(ctx, "message");
                             StaffChatManager.sendStaffMessage(player, message);
                             return 1;
                         })
@@ -99,7 +99,6 @@ public class StaffChatCommand {
             sendMessage(player, component);
             return;
         }
-
         if (error) {
             source.sendFailure(component);
         } else {

@@ -15,11 +15,6 @@ public class PermissionManager {
     private static volatile boolean luckPermsMissing = false;
     private static volatile boolean luckPermsWarned = false;
 
-    // Utility class - prevent instantiation
-    private PermissionManager() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static void init() {
         initLuckPerms();
     }
@@ -28,7 +23,6 @@ public class PermissionManager {
         if (luckPermsApi != null || luckPermsMissing) {
             return;
         }
-
         try {
             luckPermsApi = LuckPermsProvider.get();
             LOGGER.info("Successfully detected and initialized LuckPerms API");

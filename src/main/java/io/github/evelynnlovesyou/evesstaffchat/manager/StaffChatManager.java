@@ -12,11 +12,6 @@ public class StaffChatManager {
 
     private static final Set<UUID> TOGGLED = ConcurrentHashMap.newKeySet();
 
-    // Utility class - prevent instantiation
-    private StaffChatManager() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static void removeToggled(UUID playerId) {
         TOGGLED.remove(playerId);
     }
@@ -54,7 +49,7 @@ public class StaffChatManager {
     }
 
     public static boolean canReceiveStaffMessages(ServerPlayer player) {
-        return PermissionManager.hasPermission(player, ModConfig.PERM_RECEIVE);
+        return PermissionManager.hasPermission(player, "evesstaffchat.staffchat.receive");
     }
 }
 
