@@ -90,9 +90,9 @@ public class ConfigRepository {
                 } else {
                     if (fallbackContent != null) {
                         Files.writeString(file, fallbackContent, StandardCharsets.UTF_8);
-                        LOGGER.info("Created default {} at {} using built-in fallback", fileName, file);
+                        LOGGER.info("created default values {} at {}", fileName, file);
                     } else {
-                        LOGGER.warn("Default resource {} not found in jar and no fallback provided", defaultResource);
+                        LOGGER.warn("default resource {} not found in jar and no fallback provided", defaultResource);
                     }
                 }
             }

@@ -66,8 +66,16 @@ public class ChatConfigFile {
                 if (permissionBase.isEmpty()) {
                     permissionBase = "evesstaffchat." + key;
                 }
+                String chatcommand = values.getOrDefault("chat_command", key).trim();
                 String messageFormat = values.getOrDefault("message_format", DEFAULT_MESSAGE_FORMAT);
-                chatDefinitions.put(key, new ChatDefinition(key, key, permissionBase, messageFormat));
+                String chatname = values.getOrDefault("chat_name", key).trim();
+                if (chatcommand.isEmpty()) {
+                    chatcommand = key;
+                }
+                if (chatname.isEmpty()) {
+                    chatname = key;
+                }
+                chatDefinitions.put(key, new ChatDefinition(key, chatname, chatcommand, permissionBase, messageFormat));
             }
         } catch (IOException e) {
             throw new ConfigLoadException("Failed to load chats.json: " + e.getMessage(), e);
@@ -91,6 +99,8 @@ public class ChatConfigFile {
     private static boolean ensureStaffChatDefault(Map<String, Map<String, String>> chats) {
         if (!chats.containsKey("staffchat")) {
             Map<String, String> defaults = new LinkedHashMap<>();
+            defaults.put("chat_name", "Staff Chat");
+            defaults.put("chat_command", "staffchat");
             defaults.put("permission_base", "evesstaffchat.staffchat");
             defaults.put("message_format", DEFAULT_MESSAGE_FORMAT);
             chats.put("staffchat", defaults);
@@ -111,6 +121,14 @@ public class ChatConfigFile {
             staffChat.put("message_format", DEFAULT_MESSAGE_FORMAT);
             updated = true;
         }
+        if (!staffChat.containsKey("chat_command")) {
+            staffChat.put("chat_command", "staffchat");
+            updated = true;
+        }
+        if (!staffChat.containsKey("chat_name")) {
+            staffChat.put("chat_name", "Staff Chat");
+            updated = true;
+        }
         return updated;
     }
 
@@ -119,6 +137,8 @@ public class ChatConfigFile {
         Map<String, String> staffchat = new LinkedHashMap<>();
         staffchat.put("permission_base", "evesstaffchat.staffchat");
         staffchat.put("message_format", DEFAULT_MESSAGE_FORMAT);
+        staffchat.put("chat_command", "staffchat");
+        staffchat.put("chat_name", "Staff Chat");
         defaults.put("staffchat", staffchat);
         return defaults;
     }

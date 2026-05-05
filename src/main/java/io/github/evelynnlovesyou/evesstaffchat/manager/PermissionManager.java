@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// permission management class using luckperms or op
 public class PermissionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
@@ -16,10 +17,12 @@ public class PermissionManager {
     private static volatile boolean luckPermsMissing = false;
     private static volatile boolean luckPermsWarned = false;
 
+    // init ts
     public static void init() {
         initLuckPerms();
     }
 
+    // init luckperms or just use op only
     private static synchronized void initLuckPerms() {
         if (luckPermsApi != null || luckPermsMissing) {
             return;
@@ -41,6 +44,7 @@ public class PermissionManager {
         }
     }
 
+    // check for perms
     public static boolean hasPermission(ServerPlayer player, String permission) {
         initLuckPerms();
         if (luckPermsApi != null) {
@@ -51,7 +55,7 @@ public class PermissionManager {
                     return true;
                 }
             } catch (Exception ignored) {
-                // Fallback to OP
+                // luckperms isn't real
             }
         }
         return player.server != null && player.server.getPlayerList().isOp(player.getGameProfile());

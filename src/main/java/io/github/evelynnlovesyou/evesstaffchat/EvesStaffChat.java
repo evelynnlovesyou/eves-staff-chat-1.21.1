@@ -32,6 +32,7 @@ public class EvesStaffChat implements ModInitializer {
 			ConfigRepository.init();
 		} catch (Exception e) {
 			LOGGER.error("Failed to load configuration: {}", e.getMessage());
+			return;
 		}
 
 		// Register commands

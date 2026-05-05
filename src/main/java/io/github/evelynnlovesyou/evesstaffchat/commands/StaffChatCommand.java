@@ -15,6 +15,7 @@ import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
 import io.github.evelynnlovesyou.evesstaffchat.exceptions.ConfigLoadException;
 import io.github.evelynnlovesyou.evesstaffchat.manager.PermissionManager;
 import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
+import io.github.evelynnlovesyou.evesstaffchat.utils.TextUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +28,16 @@ import java.util.Set;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 
 public class StaffChatCommand {
-    private static final String RELOAD_PERMISSION = "evesstaffchat.reload";
+    private static final String RELOAD_PERM = "evesstaffchat.reload";
     private static final Logger LOGGER = LoggerFactory.getLogger("eves-staff-chat");
 
-    // Tracks all chat command names this mod has registered so they can be cleaned up on reload.
+    // tracks all currently registered commands, removed when reloading to prevent registration of deleted chats and to update permissions
     private static final Set<String> REGISTERED_CHAT_COMMANDS = new HashSet<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        syncChatCommands(dispatcher);
-
         dispatcher.register(
             Commands.literal("evesstaffchat")
-                .requires(source -> hasPermission(source, RELOAD_PERMISSION))
+                .requires(source -> hasPermission(source, RELOAD_PERM))
                 .then(
                     Commands.literal("reload")
                         .executes(ctx -> {
@@ -57,22 +56,25 @@ public class StaffChatCommand {
                         })
                 )
         );
+        syncChatCommands(dispatcher);
     }
     
+    // sync the current config chats with registered commands
     private static void syncChatCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
-        // Remove all commands we registered before.
+        // remove all commands registered
         for (String name : REGISTERED_CHAT_COMMANDS) {
             removeCommandNode(dispatcher, name);
         }
         REGISTERED_CHAT_COMMANDS.clear();
 
-        // Register every chat that is currently configured.
+        // register commands for all chats in the config
         for (ChatDefinition chat : ConfigRepository.get().chats().getChats().values()) {
             registerSingleChatCommand(dispatcher, chat);
             registerSingleToggleCommand(dispatcher, chat);
         }
     }
 
+    // remove commands from dispatcher that are still loaded but aren't in config
     private static void removeCommandNode(CommandDispatcher<CommandSourceStack> dispatcher, String name) {
         try {
             Field childrenField = CommandNode.class.getDeclaredField("children");
@@ -93,6 +95,7 @@ public class StaffChatCommand {
         }
     }
 
+    // register individual chat commands
     private static void registerSingleChatCommand(CommandDispatcher<CommandSourceStack> dispatcher, ChatDefinition chat) {
         REGISTERED_CHAT_COMMANDS.add(chat.commandName());
 
@@ -102,13 +105,13 @@ public class StaffChatCommand {
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
                     if (!PermissionManager.hasPermission(player, chat.permissionBase() + ".toggle")) {
-                        sendMessage(player, Component.literal(formatChatText(ConfigRepository.get().lang().get("no_permission_toggle"), chat.key())));
+                        sendMessage(player, Component.literal(TextUtil.applyPlaceholders(ConfigRepository.get().lang().get("no_permission_toggle"), "%chat_name%", chat.chatName(), "%chat_key%", chat.key())));
                         return 0;
                     }
                     boolean enabled = StaffChatManager.toggle(player, chat.key());
                     sendMessage(player, Component.literal(enabled
-                        ? formatChatText(ConfigRepository.get().lang().get("chat_enabled"), chat.key())
-                        : formatChatText(ConfigRepository.get().lang().get("chat_disabled"), chat.key())));
+                        ? TextUtil.applyPlaceholders(ConfigRepository.get().lang().get("chat_enabled"), "%chat_name%", chat.chatName(), "%chat_key%", chat.key())
+                        : TextUtil.applyPlaceholders(ConfigRepository.get().lang().get("chat_disabled"), "%chat_name%", chat.chatName(), "%chat_key%", chat.key())));
                     return 1;
                 })
                 .then(
@@ -125,6 +128,7 @@ public class StaffChatCommand {
         );
     }
 
+    // register toggle command
     private static void registerSingleToggleCommand(CommandDispatcher<CommandSourceStack> dispatcher, ChatDefinition chat) {
         String commandName = chat.commandName() + "toggle";
         REGISTERED_CHAT_COMMANDS.add(commandName);
@@ -137,30 +141,24 @@ public class StaffChatCommand {
 
                     boolean enabled = StaffChatManager.toggle(player, chat.key());
                     sendMessage(player, Component.literal(enabled
-                        ? formatChatText(ConfigRepository.get().lang().get("chat_enabled"), chat.key())
-                        : formatChatText(ConfigRepository.get().lang().get("chat_disabled"), chat.key())));
+                        ? TextUtil.applyPlaceholders(ConfigRepository.get().lang().get("chat_enabled"), "%chat_name%", chat.chatName(), "%chat_key%", chat.key())
+                        : TextUtil.applyPlaceholders(ConfigRepository.get().lang().get("chat_disabled"), "%chat_name%", chat.chatName(), "%chat_key%", chat.key())));
                     return 1;
                 })
         );
     }
 
-    private static String formatChatText(String template, String chatKey) {
-        return template.replace("%chat%", chatKey);
-    }
-
+    // send message to player - actionbar or chat depending on config
     private static void sendMessage(ServerPlayer player, Component component) {
         if (ConfigRepository.get().config().useActionBar()) {
-            player.displayClientMessage(component, true);
+            player.displayClientMessage(component, true); // haha action bar go brr
         } else {
             player.sendSystemMessage(component);
         }
     }
 
+    // send message to command source
     private static void sendToSource(CommandSourceStack source, Component component, boolean error) {
-        if (source.getEntity() instanceof ServerPlayer player) {
-            sendMessage(player, component);
-            return;
-        }
         if (error) {
             source.sendFailure(component);
         } else {
@@ -168,6 +166,7 @@ public class StaffChatCommand {
         }
     }
 
+    // check perms
     private static boolean hasPermission(CommandSourceStack source, String permission) {
         return source.getEntity() instanceof ServerPlayer player
             && PermissionManager.hasPermission(player, permission);

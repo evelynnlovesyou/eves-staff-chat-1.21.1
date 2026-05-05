@@ -1,10 +1,11 @@
 package io.github.evelynnlovesyou.evesstaffchat.events;
 
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+
 import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
 
 public class StaffChatMessageHandler {
-
+    
     public static void register() {
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
             if (sender != null) {

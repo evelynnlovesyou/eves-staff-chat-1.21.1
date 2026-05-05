@@ -4,12 +4,14 @@ package io.github.evelynnlovesyou.evesstaffchat.config;
 public final class ChatDefinition {
 
     private final String key;
+    private final String chatName;
     private final String commandName;
     private final String permissionBase;
     private final String messageFormat;
 
-    public ChatDefinition(String key, String commandName, String permissionBase, String messageFormat) {
+    public ChatDefinition(String key, String chatName, String commandName, String permissionBase, String messageFormat) {
         this.key = key;
+        this.chatName = chatName;
         this.commandName = commandName;
         this.permissionBase = permissionBase;
         this.messageFormat = messageFormat;
@@ -17,6 +19,10 @@ public final class ChatDefinition {
 
     public String key() {
         return key;
+    }
+
+    public String chatName() {
+        return chatName;
     }
 
     public String commandName() {

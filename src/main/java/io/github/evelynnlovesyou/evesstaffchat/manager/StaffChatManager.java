@@ -2,7 +2,7 @@ package io.github.evelynnlovesyou.evesstaffchat.manager;
 
 import io.github.evelynnlovesyou.evesstaffchat.config.ChatDefinition;
 import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
-
+import io.github.evelynnlovesyou.evesstaffchat.utils.TextUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -24,14 +24,17 @@ public class StaffChatManager {
         }
 
         UUID id = player.getGameProfile().getId();
-        String current = ACTIVE_CHAT.get(id);
-        if (chatKey.equals(current)) {
-            ACTIVE_CHAT.remove(id);
-            return false;
-        } else {
-            ACTIVE_CHAT.put(id, chatKey);
-            return true;
-        }
+        boolean[] result = {false};
+        ACTIVE_CHAT.compute(id, (k, current) -> {
+            if (chatKey.equals(current)) {
+                result[0] = false;
+                return null;
+            } else {
+                result[0] = true;
+                return chatKey;
+            }
+        });
+        return result[0];
     }
 
     public static String getPlayerToggledChat(ServerPlayer player) {
@@ -51,11 +54,7 @@ public class StaffChatManager {
         if (chat == null) return;
 
         String playerName = sender.getGameProfile().getName();
-        String formattedMessage = chat.messageFormat()
-                .replace("%chat%", chat.key())
-                .replace("%player%", playerName)
-                .replace("%message%", message);
-        
+        String formattedMessage = TextUtil.applyPlaceholders(chat.messageFormat(), "%player%", playerName, "%message%", message, "%chat_name%", chat.chatName(), "%chat_key%", chat.key());
         Component comp = Component.literal(formattedMessage);
 
         for (ServerPlayer p : sender.server.getPlayerList().getPlayers()) {

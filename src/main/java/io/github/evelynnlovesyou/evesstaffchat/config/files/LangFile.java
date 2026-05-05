@@ -24,11 +24,11 @@ public class LangFile {
     private static final String DEFAULT_RESOURCE = "/config/lang.json";
 
     private static final Map<String, String> DEFAULTS = Map.of(
-        "no_permission_toggle", "no perms to toggle %chat%",
-        "no_permission_send",   "no perms to send to %chat%",
+        "no_permission_toggle", "no perms to toggle %chat_name%",
+        "no_permission_send",   "no perms to send to %chat_name%",
         "no_permission_reload", "no perms to reload config",
-        "chat_enabled",         "%chat% enabled",
-        "chat_disabled",        "%chat% disabled",
+        "chat_enabled",         "%chat_name% enabled",
+        "chat_disabled",        "%chat_name% disabled",
         "reload_success",       "reloaded",
         "reload_failed",        "failed to reload config"
     );
