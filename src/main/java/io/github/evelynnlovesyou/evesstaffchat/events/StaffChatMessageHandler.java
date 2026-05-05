@@ -5,17 +5,17 @@ import io.github.evelynnlovesyou.evesstaffchat.manager.StaffChatManager;
 
 public class StaffChatMessageHandler {
 
-    // Utility class - prevent instantiation
-    private StaffChatMessageHandler() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static void register() {
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
-            if (sender != null && StaffChatManager.isPlayerToggled(sender)) {
+            if (sender != null) {
+                String activeChat = StaffChatManager.getPlayerToggledChat(sender);
+                if (activeChat == null) {
+                    return true;
+                }
+
                 String rawMessage = message.signedContent();
                 if (!rawMessage.isEmpty()) {
-                    StaffChatManager.sendStaffMessage(sender, rawMessage);
+                    StaffChatManager.sendStaffMessage(sender, activeChat, rawMessage);
                 }
                 return false;
             }

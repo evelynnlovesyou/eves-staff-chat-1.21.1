@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.evelynnlovesyou.evesstaffchat.commands.StaffChatCommand;
+import io.github.evelynnlovesyou.evesstaffchat.config.ConfigRepository;
 import io.github.evelynnlovesyou.evesstaffchat.events.PlayerConnectionHandler;
 import io.github.evelynnlovesyou.evesstaffchat.events.StaffChatMessageHandler;
 import io.github.evelynnlovesyou.evesstaffchat.manager.PermissionManager;
@@ -26,6 +27,12 @@ public class EvesStaffChat implements ModInitializer {
 			.map(container -> container.getMetadata().getVersion().getFriendlyString())
 			.orElse("unknown");
 		LOGGER.info("eves-staff-chat Initialising {} v{}", MOD_ID, version);
+
+		try {
+			ConfigRepository.init();
+		} catch (Exception e) {
+			LOGGER.error("Failed to load configuration: {}", e.getMessage());
+		}
 
 		// Register commands
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
